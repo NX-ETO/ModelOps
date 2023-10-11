@@ -33,16 +33,6 @@ def score(context: ModelContext, **kwargs):
     # add job_id column so we know which execution this is from if appended to predictions table
     predictions_pdf["job_id"] = context.job_id
 
-    # teradataml doesn't match column names on append.. and so to match / use same table schema as for byom predict
-    # example (see README.md), we must add empty json_report column and change column order manually (v17.0.0.4)
-    # CREATE MULTISET TABLE pima_patient_predictions
-    # (
-    #     job_id VARCHAR(255), -- comes from airflow on job execution
-    #     PatientId BIGINT,    -- entity key as it is in the source data
-    #     HasDiabetes BIGINT,   -- if model automatically extracts target
-    #     json_report CLOB(1048544000) CHARACTER SET UNICODE  -- output of
-    # )
-    # PRIMARY INDEX ( job_id );
     predictions_pdf["json_report"] = ""
     predictions_pdf = predictions_pdf[["job_id", entity_key, target_name, "json_report"]]
 
