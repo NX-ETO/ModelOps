@@ -5,7 +5,9 @@ from aoa import (
     aoa_create_context,
     ModelContext
 )
-import numpy as np
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.calibration import CalibratedClassifierCV
+import joblib
 
 def train(context: ModelContext, **kwargs):
     aoa_create_context()
@@ -18,18 +20,22 @@ def train(context: ModelContext, **kwargs):
 
     print("Starting training...")
 
-    model = DecisionForest(data=train_df,
-                            input_columns = feature_names, 
-                            response_column = target_name, 
-                            max_depth = context.hyperparams["max_depth"], 
-                            num_trees = context.hyperparams["num_trees"], 
-                            min_node_size = context.hyperparams["min_node_size"], 
-                            mtry = context.hyperparams["mtry"], 
-                            mtry_seed = context.hyperparams["mtry_seed"], 
-                            seed = context.hyperparams["seed"], 
-                            tree_type = context.hyperparams["tree_type"])
+    train_pdf=train_df.to_pandas(all_rows=True)
+    X_train=train_pdf[feature_names]
+    y_train=train_pdf[target_name]
+
+    modelo=RandomForestClassifier(n_estimators=126,
+                               criterion="gini",
+                               max_features="sqrt",
+                               bootstrap=True,
+                               max_samples=2/3,
+                               oob_score=True)
+
+    Morf=modelo.fit(X_train,y_train)
+    modelo_calibrado = CalibratedClassifierCV(Morf, cv=5, method='isotonic')
+    modelo_calibrado = modelo_calibrado.fit(X_train,y_train)
+    joblib.dump(modelo_calibrado,f"{context.artifact_output_path}/modelo.joblib")
     
-    model.result.to_sql(f"model_${context.model_version}", if_exists="replace")    
     print("Saved trained model")
 
     record_training_stats(
