@@ -34,7 +34,7 @@ def train(context: ModelContext, **kwargs):
     Morf=modelo.fit(X_train,y_train)
     modelo_calibrado = CalibratedClassifierCV(Morf, cv=5, method='isotonic')
     modelo_calibrado = modelo_calibrado.fit(X_train,y_train)
-    joblib.dump(modelo_calibrado,f"{context.artifact_output_path}/modelo.joblib")
+    joblib.dump(modelo_calibrado,f"{context.artifact_output_path}/model.joblib")
     
     print("Saved trained model")
 
