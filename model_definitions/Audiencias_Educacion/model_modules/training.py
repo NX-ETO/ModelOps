@@ -24,12 +24,12 @@ def train(context: ModelContext, **kwargs):
     X_train=train_pdf[feature_names]
     y_train=train_pdf[target_name]
 
-    modelo=RandomForestClassifier(n_estimators=126,
-                               criterion="gini",
-                               max_features="sqrt",
-                               bootstrap=True,
-                               max_samples=2/3,
-                               oob_score=True)
+    modelo=RandomForestClassifier(n_estimators=context.hyperparams["n_estimators"],
+                               criterion=context.hyperparams["criterion"],
+                               max_features=context.hyperparams["max_features"],
+                               bootstrap=context.hyperparams["bootstrap"],
+                               max_samples=context.hyperparams["max_samples"],
+                               oob_score=context.hyperparams["oob_score"])
 
     Morf=modelo.fit(X_train,y_train)
     modelo_calibrado = CalibratedClassifierCV(Morf, cv=5, method='isotonic')
