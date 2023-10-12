@@ -18,11 +18,12 @@ def train(context: ModelContext, **kwargs):
     # read training dataset from Teradata and convert to pandas
     train_df = DataFrame.from_query(context.dataset_info.sql)
     train_pdf=train_df.to_pandas(all_rows=True)
-    
-    print("Starting training...")
 
+    # split data into X and y
     X_train=train_pdf[feature_names]
     y_train=train_pdf[target_name]
+
+    print("Starting training...")
 
     modelo=RandomForestClassifier(n_estimators=context.hyperparams["n_estimators"],
                                criterion=context.hyperparams["criterion"],
