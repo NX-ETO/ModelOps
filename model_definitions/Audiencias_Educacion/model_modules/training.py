@@ -7,6 +7,9 @@ from aoa import (
 )
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.calibration import CalibratedClassifierCV
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler
+import matplotlib.pyplot as plt
 import joblib
 
 def train(context: ModelContext, **kwargs):
@@ -25,20 +28,16 @@ def train(context: ModelContext, **kwargs):
 
     print("Starting training...")
 
-    modelo=RandomForestClassifier(n_estimators=context.hyperparams["n_estimators"],
-                               criterion=context.hyperparams["criterion"],
-                               max_features=context.hyperparams["max_features"],
-                               bootstrap=context.hyperparams["bootstrap"],
-                               max_samples=context.hyperparams["max_samples"],
-                               oob_score=context.hyperparams["oob_score"])
+    modelo=Pipeline([('scaler', StandardScaler()),
+                      ('RandomForest', RandomForestClassifier(n_estimators=context.hyperparams["n_estimators"],
+                                                                criterion=context.hyperparams["criterion"],
+                                                                max_features=context.hyperparams["max_features"],
+                                                                bootstrap=context.hyperparams["bootstrap"],
+                                                                max_samples=context.hyperparams["max_samples"],
+                                                                oob_score=context.hyperparams["oob_score"])
+                    )])
 
     Morf=modelo.fit(X_train,y_train)
-
-    importancia_predictores = pd.DataFrame(
-                        {'predictor': X_train.columns,
-                         'importancia': modelo.feature_importances_}
-                        )
-    importancia_predictores.sort_values('importancia', ascending=False)
     
     modelo_calibrado = CalibratedClassifierCV(Morf, cv=5, method='isotonic')
     modelo_calibrado = modelo_calibrado.fit(X_train,y_train)
@@ -46,11 +45,19 @@ def train(context: ModelContext, **kwargs):
     
     print("Saved trained model")
 
+    plt.barh(X_train.columns,Morf.named_steps["RandomForest"].feature_importances_)
+    save_plot("feature_importance.png", context=context)
+    feature_importance_val = Morf.named_steps["RandomForest"].feature_importances_
+    feature_importance = pd.DataFrame(
+                            {'predictor': X_train.columns,
+                            'importancia': feature_importance_val}
+                            )
+    
     record_training_stats(
         train_df,
         features=feature_names,
         targets=[target_name],
         categorical=[target_name],
-        feature_importance=importancia_predictores,
+        feature_importance=feature_importance,
         context=context
     )
