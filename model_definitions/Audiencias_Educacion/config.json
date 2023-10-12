@@ -4,7 +4,7 @@
 		"criterion":"gini", 
 		"max_features":"sqrt", 
 		"bootstrap":True,
-		"max_samples":2/3, 
+		"max_samples":0.66, 
 		"oob_score":True
 	}
 }
