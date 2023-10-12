@@ -1,11 +1,10 @@
 {
 	"hyperParameters": {
-		"max_depth":12, 
-		"num_trees":4, 
-		"min_node_size":1, 
-		"mtry":3,
-		"mtry_seed":1, 
-		"seed":1, 
-		"tree_type":"CLASSIFICATION"
+		"n_estimators":126, 
+		"criterion":"gini", 
+		"max_features":"sqrt", 
+		"bootstrap":True,
+		"max_samples":2/3, 
+		"oob_score":True
 	}
 }
