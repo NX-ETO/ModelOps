@@ -3,8 +3,8 @@
 		"n_estimators":126, 
 		"criterion":"gini", 
 		"max_features":"sqrt", 
-		"bootstrap":True,
+		"bootstrap":"True",
 		"max_samples":0.66, 
-		"oob_score":True
+		"oob_score":"True"
 	}
 }
