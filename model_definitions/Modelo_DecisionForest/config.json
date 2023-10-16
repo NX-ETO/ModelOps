@@ -3,9 +3,9 @@
 		"max_depth": 12,
 		"num_trees": 4,
 		"min_node_size": 1,
-		"mtry":3,
-		"mtry_seed":1,
-		"seed":1,
+		"mtry": 3,
+		"mtry_seed": 1,
+		"seed": 1,
 		"tree_type": "REGRESSION",
 		
 	}
